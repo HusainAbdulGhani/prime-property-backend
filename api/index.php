@@ -1,5 +1,10 @@
 <?php
 
+// DEBUG SEMENTARA - HAPUS SETELAH KETAUAN ERROR NYA
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Handle OPTIONS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: https://prime-property-frontend-three.vercel.app');
@@ -10,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Fix storage path untuk Vercel (read-only filesystem)
+// Fix storage path untuk Vercel
 $tmpStorage = '/tmp/storage';
 $dirs = [
     $tmpStorage,
@@ -30,5 +35,4 @@ foreach ($dirs as $dir) {
     }
 }
 
-// Boot Laravel
 require __DIR__ . '/../public/index.php';
