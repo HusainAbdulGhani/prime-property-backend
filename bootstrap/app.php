@@ -9,9 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
-if (env('VERCEL_JOB_ID') || env('NOW_REGION')) {
-    $app->useStoragePath('/tmp/storage');
-}
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -20,16 +17,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(prepend: [
-            EnsureFrontendRequestsAreStateful::class,
-        ]);
+        // $middleware->api(prepend: [
+        //     EnsureFrontendRequestsAreStateful::class,
+        // ]);
 
         $middleware->alias([
             'superadmin' => EnsureSuperadmin::class,
         ]);
+
         $middleware->throttleApi();
     })
     ->booting(function (): void {
+        // Set storage path SEBELUM app booted (lebih aman di sini)
+        if (env('VERCEL_JOB_ID') || env('NOW_REGION')) {
+            app()->useStoragePath('/tmp/storage');
+        }
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(100)->by($request->ip());
         });
@@ -42,4 +45,5 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->create();
