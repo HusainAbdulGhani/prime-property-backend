@@ -17,7 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Sanctum stateful API — session cookies for SPA authentication
         $middleware->api(prepend: [
             EnsureFrontendRequestsAreStateful::class,
         ]);
@@ -25,28 +24,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'superadmin' => EnsureSuperadmin::class,
         ]);
-
-        // Apply global API rate limit (100 req/min/IP)
         $middleware->throttleApi();
     })
     ->booting(function (): void {
-        /*
-        |----------------------------------------------------------------------
-        | Prime Property Rate Limiters
-        |----------------------------------------------------------------------
-        */
-
-        // Global API: 100 requests per minute per IP
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(100)->by($request->ip());
         });
-
-        // Auth endpoints: 10 requests per minute per IP
         RateLimiter::for('auth', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip());
         });
-
-        // Contact form anti-spam: 3 submissions per hour per IP
         RateLimiter::for('contact', function (Request $request) {
             return Limit::perHour(3)->by($request->ip());
         });
