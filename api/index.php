@@ -1,10 +1,5 @@
 <?php
 
-// DEBUG SEMENTARA - HAPUS SETELAH KETAUAN ERROR NYA
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // Handle OPTIONS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: https://prime-property-frontend-three.vercel.app');
@@ -15,18 +10,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Fix storage path untuk Vercel
-$tmpStorage = '/tmp/storage';
+// Fix HOME dan temp directory untuk Vercel Linux
+putenv('HOME=/tmp');
+
+// Buat semua direktori yang dibutuhkan Laravel di /tmp
 $dirs = [
-    $tmpStorage,
-    $tmpStorage . '/app',
-    $tmpStorage . '/app/public',
-    $tmpStorage . '/framework',
-    $tmpStorage . '/framework/cache',
-    $tmpStorage . '/framework/cache/data',
-    $tmpStorage . '/framework/sessions',
-    $tmpStorage . '/framework/views',
-    $tmpStorage . '/logs',
+    '/tmp/storage',
+    '/tmp/storage/app',
+    '/tmp/storage/app/public',
+    '/tmp/storage/framework',
+    '/tmp/storage/framework/cache',
+    '/tmp/storage/framework/cache/data',
+    '/tmp/storage/framework/sessions',
+    '/tmp/storage/framework/views',
+    '/tmp/storage/logs',
+    '/tmp/bootstrap',
+    '/tmp/bootstrap/cache',
 ];
 
 foreach ($dirs as $dir) {
